@@ -1,8 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdarg.h>
-#include <stdint.h>
 #include "stegan.h"
 
 void	print_usage(char *filename)
@@ -138,19 +133,17 @@ int	main(int argc, char *argv[])
 	f = fopen(params.cover_name, "r+");
 
 	unsigned char	magic[8];
-	unsigned char	ihdr[16];
-	unsigned char	idat[12];
+	unsigned char	ihdr[24];
 	int				i;
 	fread(magic, 1,8,f);
-	fread(ihdr, 4, 4, f);
+	fread(ihdr, 4, 6, f);
 	
 	i = 0;
-	printf(" OPENED FILE \n\n");
-	while (i < 16)
-	{
-		printf("%d ", (unsigned int)ihdr[i]);
-		i++;
-	}
+	// while (i < 16)
+	// {
+	// 	printf("%d ", (unsigned int)ihdr[i]);
+	// 	i++;
+	// }
 	unsigned long	width = 0;
 	unsigned long	height = 0;
 
@@ -162,6 +155,19 @@ int	main(int argc, char *argv[])
 
 	printf("Width x Height : %lux%lu\n", width, height);
 
+	unsigned char	idat[20];
+	unsigned long	chunk_size = 0;
+	size_t			rs = 0;
+	rs = fread(idat, 1, 20, f);
+	// while ((rs = fread(idat, 1, 20, f)) == 20)
+
+	for (int j = 0; j < 4; j++)
+	{
+		chunk_size = (chunk_size << 8) | idat[0 + j];
+	}
+
+	printf("Size of chunk : %d\n", chunk_size);
+	
 	fclose(f);
 	return (0);
 }
